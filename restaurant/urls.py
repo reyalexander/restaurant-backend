@@ -38,7 +38,12 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/user', include("apps.user.urls")),
     path('api/v1/product', include("apps.product.urls")),
     path('api/v1/product_type', include("apps.product_type.urls")),
+    path('api/v1/resource', include("apps.resource.urls")),
+    path('api/v1/table', include("apps.table.urls")),
+    path('api/v1/ticket', include("apps.ticket.urls")),
+    path('api/v1/ticket_detail', include("apps.ticket_detail.urls")),
     path('swagger/', schema_view.with_ui("swagger", cache_timeout=0), name="swagger-docs"),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

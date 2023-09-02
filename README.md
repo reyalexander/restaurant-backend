@@ -42,12 +42,16 @@ python manage.py runserver
 
 ## Estructura del Proyecto
 inventario-backend/
-|-- restaurant/
 |-- apps/
-    |-- product_type/
     |-- product/
-    |-- user/
-|-- .gitignore/
+    |-- product_type/
+    |-- resource/
+    |-- table/
+    |-- ticket/
+    |-- ticket_detail/
+    |-- user/   
+|-- restaurant/
+|-- .gitignore
 |-- manage.py
 |-- README.md
 |-- requirements.txt
