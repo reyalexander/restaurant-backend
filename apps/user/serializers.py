@@ -19,4 +19,4 @@ class RoleSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ['password','is_admin','last_login','created','updated']
+        exclude = ['password','is_admin','last_login','created','updated','groups','user_permissions']

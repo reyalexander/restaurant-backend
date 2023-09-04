@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    'django_filters',
     'corsheaders',
+    'django_filters',
     'drf_yasg',
     'apps.product',
     'apps.product_type',
@@ -72,6 +72,7 @@ CORS_ALLOW_METHODS  =  (
 )
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
