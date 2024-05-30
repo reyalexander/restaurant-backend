@@ -114,6 +114,7 @@ class User(AbstractBaseUser):
         blank=True,
         verbose_name="foto de perfil",
     )  # foto de perfil del usuario
+    dark_mode = models.BooleanField(default=False, null=True)
     is_admin = models.BooleanField(
         blank=True, default=False, verbose_name="super administrador"
     )
@@ -125,7 +126,6 @@ class User(AbstractBaseUser):
     created = models.DateTimeField(auto_now_add=True, verbose_name="fecha de creación")
     updated = models.DateTimeField(auto_now=True, verbose_name="fecha de actualización")
     deleted = models.BooleanField(default=False, null=True)
-    dark_mode = models.BooleanField(default=False, null=True)
 
     objects = UserManager()
 
