@@ -9,9 +9,8 @@ class Ticket(models.Model):
         (2, "Inactivo"),
         (3, "Eliminado"),
     )
-    local_name = models.CharField(max_length=70, blank=True)
-    ruc = models.CharField(max_length=10, null=False)
-    discount = models.DecimalField(max_digits=3, decimal_places=0, default=0)
+    ruc = models.CharField(max_length=10, null=True, blank=True)
+    discount = models.IntegerField(null=True, blank=True)
     priceTotal = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
