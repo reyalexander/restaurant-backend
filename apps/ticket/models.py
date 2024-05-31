@@ -14,7 +14,7 @@ class Ticket(models.Model):
     priceTotal = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    table_id = models.ForeignKey(Table, on_delete=models.CASCADE)
+    table_id = models.ForeignKey(Table, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False, null=True)
