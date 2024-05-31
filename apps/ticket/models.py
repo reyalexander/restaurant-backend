@@ -9,6 +9,7 @@ class Ticket(models.Model):
         (2, "Inactivo"),
         (3, "Eliminado"),
     )
+    code = models.CharField(max_length=150, blank=True)
     ruc = models.CharField(max_length=10, null=True, blank=True)
     discount = models.IntegerField(null=True, blank=True)
     priceTotal = models.DecimalField(max_digits=9, decimal_places=2, default=0)
