@@ -88,7 +88,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     STATUS_CHOICES = (
         (1, "Activo"),
         (2, "Inactivo"),
