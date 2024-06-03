@@ -3,12 +3,15 @@ from .models import Role, Permission, User
 from .serializers import RoleSerializer, PermissionSerializer, UserSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.views import TokenObtainPairView
+from .filters import *
+
 
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [RolViewFilter]
+
 
 class PermissionViewSet(viewsets.ModelViewSet):
     queryset = Permission.objects.all()
@@ -21,7 +24,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [UserViewFilter]
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -32,13 +35,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             user = self.get_user(request.data)
             if user.is_superuser:
                 superuser_id = user.id
-                response.data['user_id'] = superuser_id
+                response.data["user_id"] = superuser_id
 
         return response
 
     def get_user(self, data):
-        email = data.get('email', None)
-        password = data.get('password', None)
+        email = data.get("email", None)
+        password = data.get("password", None)
         user = User.objects.get(email=email)
         if user.check_password(password):
             return user
