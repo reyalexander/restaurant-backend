@@ -21,3 +21,20 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+
+
+class UserGetSerializer(serializers.ModelSerializer):
+    _id_role = RoleSerializer(source="id_role", read_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "id_role",
+            "ruc",
+            "status",
+            "_id_role",
+        ]

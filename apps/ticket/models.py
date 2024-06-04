@@ -41,6 +41,9 @@ class Ticket(models.Model):
         verbose_name_plural = "Boletas de Ventas"
         ordering = ["id"]
 
+    def __str__(self):
+        return f"{self.code} - s/{self.priceTotal}"
+
     def generate_order_code(self):
         ticket = self.id
         self.code = f"OR-010{ticket:02d}"
