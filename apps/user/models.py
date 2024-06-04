@@ -5,6 +5,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from apps.company.models import Company
 
 
 class Role(models.Model):
@@ -18,11 +19,23 @@ class Role(models.Model):
         (3, "Eliminado"),
     )
 
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, verbose_name="nombre")
     description = models.TextField(null=True, verbose_name="descripcion del Rol")
+    company_id = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="CompanyRol",
+        null=True,
+        blank=True,
+    )
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Rol"
+        verbose_name_plural = "Roles"
+        ordering = ["id"]
 
     def __str__(self):
         return self.name
@@ -47,10 +60,17 @@ class Permission(models.Model):
         (3, "Eliminado"),
     )
 
-    name = models.CharField(max_length=100, choices=PERMISSION_CHOICES, unique=True)
+    name = models.CharField(max_length=100, choices=PERMISSION_CHOICES)
     id_rol = models.ForeignKey(Role, on_delete=models.CASCADE, related_name="role")
     id_resource = models.ForeignKey(
         Resource, on_delete=models.CASCADE, related_name="resource"
+    )
+    company_id = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="CompanyPermise",
+        null=True,
+        blank=True,
     )
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -97,6 +117,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     id_role = models.ForeignKey(
         Role, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="rol"
+    )
+    company_id = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="CompanyUser",
+        null=True,
+        blank=True,
     )
     email = models.EmailField(
         blank=False, unique=True, max_length=32, verbose_name="correo electrónico"

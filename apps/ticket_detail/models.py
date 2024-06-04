@@ -18,4 +18,9 @@ class TicketDetail(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["-id"]
+        verbose_name = "Ticket Detalle"
+        verbose_name_plural = "Detalles de los Ticket"
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.ticket_id} - {self.product_id.name} ({self.quantity})"

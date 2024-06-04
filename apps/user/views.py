@@ -1,9 +1,10 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from .models import Role, Permission, User
 from .serializers import RoleSerializer, PermissionSerializer, UserSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .filters import *
+from rest_framework.response import Response
 
 
 class RoleViewSet(viewsets.ModelViewSet):
@@ -12,6 +13,22 @@ class RoleViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [RolViewFilter]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        if user.is_superuser:
+            return queryset.filter(
+                company_id=user.company_id
+            )  # El administrador puede ver todos los elementos, incluidos los eliminados
+        return queryset.filter(status__in=[1, 2], company_id=user.company_id)
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        user = self.request.user
+        instance.company_id = user.company_id
+        instance.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class PermissionViewSet(viewsets.ModelViewSet):
     queryset = Permission.objects.all()
@@ -19,12 +36,44 @@ class PermissionViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        if user.is_superuser:
+            return queryset.filter(
+                company_id=user.company_id
+            )  # El administrador puede ver todos los elementos, incluidos los eliminados
+        return queryset.filter(status__in=[1, 2], company_id=user.company_id)
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        user = self.request.user
+        instance.company_id = user.company_id
+        instance.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [UserViewFilter]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        if user.is_superuser:
+            return queryset.filter(
+                company_id=user.company_id
+            )  # El administrador puede ver todos los elementos, incluidos los eliminados
+        return queryset.filter(status__in=[1, 2], company_id=user.company_id)
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        user = self.request.user
+        instance.company_id = user.company_id
+        instance.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

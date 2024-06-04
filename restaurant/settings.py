@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "apps.table",
     "apps.ticket",
     "apps.ticket_detail",
+    "apps.company",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
