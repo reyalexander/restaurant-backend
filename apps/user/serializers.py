@@ -1,4 +1,5 @@
 from apps.user.models import *
+from apps.company.serializers import *
 from rest_framework import serializers
 
 
@@ -12,15 +13,16 @@ class RoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Role
-        fields = "__all__"
+        exclude = ["created_at", "updated_at"]
 
 
 class UserSerializer(serializers.ModelSerializer):
     _id_role = RoleSerializer(source="id_role", read_only=True)
+    _company_id = CompanySerializer(source="company_id", read_only=True)
 
     class Meta:
         model = User
-        exclude = ["password"]
+        exclude = ["password", "created", "updated", "deleted"]
         extra_kwargs = {"password": {"write_only": True}}
 
 
