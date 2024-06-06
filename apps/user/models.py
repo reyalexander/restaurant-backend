@@ -128,6 +128,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         blank=False, unique=True, max_length=32, verbose_name="correo electrónico"
     )  # correo institucional único por usuario
+    password = models.CharField(max_length=100, blank=True)
     first_name = models.CharField(
         blank=False, max_length=32, verbose_name="nombres"
     )  # nombres completos

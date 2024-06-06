@@ -5,6 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .filters import *
 from rest_framework.response import Response
+from django.contrib.auth.hashers import make_password
 
 
 class RoleViewSet(viewsets.ModelViewSet):
@@ -69,10 +70,13 @@ class UserViewSet(viewsets.ModelViewSet):
         return queryset.filter(status__in=[1, 2], company_id=user.company_id)
 
     def perform_create(self, serializer):
-        instance = serializer.save()
         user = self.request.user
-        instance.company_id = user.company_id
+        instance = serializer.save(company_id=user.company_id)
+
+        # Hashear la contraseña antes de guardar el usuario
+        instance.password = make_password(serializer.validated_data["password"])
         instance.save()
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -82,9 +86,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
         if response.status_code == 200:
             user = self.get_user(request.data)
-            if user.is_superuser:
-                superuser_id = user.id
-                response.data["user_id"] = superuser_id
+            superuser_id = user.id
+            response.data["user_id"] = superuser_id
 
         return response
 
