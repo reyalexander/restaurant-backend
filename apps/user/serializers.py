@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ["password", "created", "updated", "deleted"]
+        exclude = ["created", "updated", "deleted"]
         extra_kwargs = {"password": {"write_only": True}}
 
 
@@ -41,4 +41,5 @@ class UserGetSerializer(serializers.ModelSerializer):
             "status",
             "_id_role",
         ]
-        extra_kwargs = {"password": {"write_only": True}}
+
+    extra_kwargs = {"password": {"write_only": True}}
