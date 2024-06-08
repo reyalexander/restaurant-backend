@@ -57,3 +57,7 @@ class Ticket(models.Model):
             self.generate_order_code()  # Genera el código de parte después de que el objeto se haya guardado
         else:
             super().save(*args, **kwargs)
+
+    def delete(self):
+        self.status = 3
+        self.save()

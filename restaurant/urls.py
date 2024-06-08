@@ -46,6 +46,7 @@ urlpatterns = [
     path("api/v1/table/", include("apps.table.urls")),
     path("api/v1/ticket/", include("apps.ticket.urls")),
     path("api/v1/ticket_detail/", include("apps.ticket_detail.urls")),
+    path("api/v1/reservation/", include("apps.reservation.urls")),
     path(
         "swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="swagger-docs"
     ),

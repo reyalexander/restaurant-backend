@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "apps.ticket",
     "apps.ticket_detail",
     "apps.company",
+    "apps.reservation",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
