@@ -31,3 +31,7 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"{self.id} - Reserva para el: {self.date}, a las {self.hour}"
+
+    def delete(self):
+        self.status = 3
+        self.save()
