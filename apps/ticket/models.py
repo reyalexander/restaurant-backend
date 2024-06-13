@@ -25,6 +25,9 @@ class Ticket(models.Model):
     priceTotal = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, verbose_name="Precio Total"
     )
+    priceFinal = models.DecimalField(
+        max_digits=9, decimal_places=2, default=0, verbose_name="Precio Total"
+    )
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES, default=1, verbose_name="Estado"
     )
@@ -42,7 +45,7 @@ class Ticket(models.Model):
         ordering = ["id"]
 
     def __str__(self):
-        return f"{self.code} - s/{self.priceTotal}"
+        return f"{self.code} - s/{self.priceFinal}"
 
     def generate_order_code(self):
         ticket = self.id
