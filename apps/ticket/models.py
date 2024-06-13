@@ -28,6 +28,9 @@ class Ticket(models.Model):
     priceFinal = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, verbose_name="Precio Total"
     )
+    check_discount = models.BooleanField(
+        default=False, blank=True, null=True, verbose_name="Tiene descuento"
+    )
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES, default=1, verbose_name="Estado"
     )
