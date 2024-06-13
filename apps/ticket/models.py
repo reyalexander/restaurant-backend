@@ -34,9 +34,11 @@ class Ticket(models.Model):
     status = models.PositiveSmallIntegerField(
         choices=STATUS_CHOICES, default=1, verbose_name="Estado"
     )
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuario")
+    user_id = models.ForeignKey(
+        User, on_delete=models.PROTECT, blank=True, null=True, verbose_name="Usuario"
+    )
     table_id = models.ForeignKey(
-        Table, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Mesa"
+        Table, on_delete=models.CASCADE, null=True, verbose_name="Mesa"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

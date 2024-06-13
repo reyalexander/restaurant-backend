@@ -13,6 +13,13 @@ class TicketViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [TicketViewFilter]
 
+    def perform_create(self, serializer):
+        user = self.request.user
+        instance = serializer.save(user_id=user)
+        instance.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
