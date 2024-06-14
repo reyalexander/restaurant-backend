@@ -5,12 +5,9 @@ from django.db.models import Q
 from rest_framework import filters
 
 
-class ProductViewFilter(filters.BaseFilterBackend):
+class MenuViewFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         # parametros especiales del Modelo
-        id_typeproduct = request.query_params.get("id_typeproduct", None)
-        if id_typeproduct:
-            queryset = queryset.filter(id_typeproduct=id_typeproduct)
         is_publish = request.query_params.get("is_publish", None)
         if is_publish:
             queryset = queryset.filter(is_publish=is_publish)

@@ -17,7 +17,7 @@ class Product(models.Model):
         blank=True,
     )
     name = models.CharField(max_length=70, blank=True, verbose_name="Nombre")
-    description = models.TextField(null=True, default=None, verbose_name="Nombre")
+    description = models.TextField(null=True, default=None, verbose_name="Descripcion")
     id_typeproduct = models.ForeignKey(
         ProductType, on_delete=models.CASCADE, verbose_name="Tipo de Producto"
     )
@@ -29,6 +29,7 @@ class Product(models.Model):
     )
     discount = models.IntegerField(default=0, verbose_name="descuento en %")
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
+    is_publish = models.BooleanField(default=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False, null=True)
@@ -37,3 +38,6 @@ class Product(models.Model):
         verbose_name = "Producto"
         verbose_name_plural = "Productos"
         ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.id} -  {self.name}"

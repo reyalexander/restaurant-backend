@@ -8,6 +8,9 @@ from rest_framework import filters
 class ProductTypeViewFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         # parametros especiales del Modelo
+        is_publish = request.query_params.get("is_publish", None)
+        if is_publish:
+            queryset = queryset.filter(is_publish=is_publish)
         # Obtiene los parámetros de consulta (query params) del request
         status = request.query_params.get("status", None)
         searchBy = request.query_params.get("searchBy", None)

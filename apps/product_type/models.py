@@ -20,6 +20,7 @@ class ProductType(models.Model):
     product_image = models.ImageField(
         upload_to="products", blank=True, null=True, verbose_name="Imagen"
     )
+    is_publish = models.BooleanField(default=True, null=True, blank=True)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -29,3 +30,6 @@ class ProductType(models.Model):
         verbose_name = "Tipo de Productos"
         verbose_name_plural = "Tipos de Productos"
         ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.id} -  {self.name}"
