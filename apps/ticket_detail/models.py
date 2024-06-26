@@ -11,13 +11,15 @@ class TicketDetail(models.Model):
     )
     ticket_id = models.ForeignKey(Ticket, on_delete=models.CASCADE)
 
-    is_menu = models.BooleanField(default=True, null=True, blank=True)
-    product_id = models.IntegerField(null=True, blank=True)
+    is_menu = models.BooleanField(
+        default=True, null=True, blank=True, verbose_name="Es Menu"
+    )
+    product_id = models.IntegerField(null=True, blank=True, verbose_name="Producto")
     price = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, verbose_name="Precio Total"
     )
-    quantity = models.IntegerField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
+    quantity = models.IntegerField(null=True, blank=True, verbose_name="Cantidad")
+    description = models.TextField(null=True, blank=True, verbose_name="Description")
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
