@@ -32,6 +32,7 @@ class UserGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "company_id",
             "id",
             "first_name",
             "last_name",
