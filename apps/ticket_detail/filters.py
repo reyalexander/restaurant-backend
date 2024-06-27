@@ -1,8 +1,70 @@
 from datetime import datetime, timedelta
 from functools import reduce
-
+from .serializers import *
 from django.db.models import Q
 from rest_framework import filters
+
+
+class MenuProductFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        # Parámetros de consulta (query params) del request
+        status = request.query_params.get("status", None)
+        searchBy = request.query_params.get("searchBy", None)
+        search = request.query_params.get("search", None)
+        orderBy = request.query_params.get("orderBy", None)
+        order = request.query_params.get("order", None)
+
+        # Filtrado en modelos Menu y Product
+        menu_queryset = Menu.objects.all()
+        product_queryset = Product.objects.all()
+
+        # Filtro por status
+        if status:
+            menu_queryset = menu_queryset.filter(status=status)
+            product_queryset = product_queryset.filter(status=status)
+
+        # Filtro por search y searchBy
+        if search and searchBy:
+            search_by_fields = searchBy.split(
+                ","
+            )  # Suponiendo que search_by es una cadena separada por comas
+            q_objects = Q()
+
+            for field in search_by_fields:
+                q_objects |= Q(**{f"{field}__icontains": search})
+            menu_queryset = menu_queryset.filter(q_objects)
+            product_queryset = product_queryset.filter(q_objects)
+
+        # Filtros adicionales de búsqueda
+        search_queries = []
+        for i in range(1, len(request.query_params) // 2 + 1):
+            search_value = request.query_params.get(f"search{i}")
+            search_by = request.query_params.get(f"searchBy{i}")
+            if search_value and search_by:
+                search_queries.append(Q(**{f"{search_by}__icontains": search_value}))
+
+        if search_queries:
+            menu_queryset = menu_queryset.filter(reduce(Q.__and__, search_queries))
+            product_queryset = product_queryset.filter(
+                reduce(Q.__and__, search_queries)
+            )
+
+        # Ordenar resultados
+        if orderBy:
+            if order == "desc":
+                menu_queryset = menu_queryset.order_by("-" + orderBy)
+                product_queryset = product_queryset.order_by("-" + orderBy)
+            else:
+                menu_queryset = menu_queryset.order_by(orderBy)
+                product_queryset = product_queryset.order_by(orderBy)
+        else:
+            menu_queryset = menu_queryset.order_by("id")
+            product_queryset = product_queryset.order_by("id")
+
+        # Combinar querysets
+        combined_queryset = list(menu_queryset) + list(product_queryset)
+
+        return combined_queryset
 
 
 class TicketDetailViewFilter(filters.BaseFilterBackend):

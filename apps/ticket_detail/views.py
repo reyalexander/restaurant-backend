@@ -42,34 +42,20 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
 
 
 class MenuProductViewSet(viewsets.ViewSet):
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["name", "price", "description"]
+    queryset = []  # Aquí puedes definir un queryset si es necesario
+    filter_backends = [MenuProductFilter]
+    permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
-        print("entro")
-        queryset_menu = Menu.objects.all()
-        queryset_product = Product.objects.all()
+        queryset = []  # Iniciamos con un queryset vacío ya que no se usará realmente
+        for backend in list(self.filter_backends):
+            queryset = backend().filter_queryset(request, queryset, self)
 
-        name = request.query_params.get("name")
-        price = request.query_params.get("price")
-        description = request.query_params.get("description")
+        menu_queryset = [item for item in queryset if isinstance(item, Menu)]
+        product_queryset = [item for item in queryset if isinstance(item, Product)]
 
-        if name:
-            queryset_menu = queryset_menu.filter(name__icontains=name)
-            queryset_product = queryset_product.filter(name__icontains=name)
-
-        if price:
-            queryset_menu = queryset_menu.filter(price=price)
-            queryset_product = queryset_product.filter(price=price)
-
-        if description:
-            queryset_menu = queryset_menu.filter(description__icontains=description)
-            queryset_product = queryset_product.filter(
-                description__icontains=description
-            )
-
-        menu_serializer = MenuSerializer(queryset_menu, many=True)
-        product_serializer = ProductSerializer(queryset_product, many=True)
+        menu_serializer = MenuSerializer(menu_queryset, many=True)
+        product_serializer = ProductSerializer(product_queryset, many=True)
 
         return Response(
             {"menus": menu_serializer.data, "products": product_serializer.data}
