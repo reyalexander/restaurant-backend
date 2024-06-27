@@ -26,7 +26,7 @@ class Ticket(models.Model):
         max_digits=9, decimal_places=2, default=0, verbose_name="Precio Total"
     )
     priceFinal = models.DecimalField(
-        max_digits=9, decimal_places=2, default=0, verbose_name="Precio Total"
+        max_digits=9, decimal_places=2, default=0, verbose_name="Precio Final"
     )
     check_discount = models.BooleanField(
         default=False, blank=True, null=True, verbose_name="Tiene descuento"
@@ -38,8 +38,9 @@ class Ticket(models.Model):
         User, on_delete=models.PROTECT, blank=True, null=True, verbose_name="Usuario"
     )
     table_id = models.ForeignKey(
-        Table, on_delete=models.CASCADE, null=True, verbose_name="Mesa"
+        Table, on_delete=models.PROTECT, null=True, verbose_name="Mesa"
     )
+    description = models.TextField(null=True, default=None, verbose_name="Descripcion")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted = models.BooleanField(default=False, null=True)
