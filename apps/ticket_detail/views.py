@@ -37,7 +37,11 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
             )
 
     def update(self, request, *args, **kwargs):
+        ticket_id = request.data["ticket_id"]
         total = request.data["new_total"]
+        ticket = Ticket.objects.get(id=ticket_id)
+        ticket.priceTotal = total
+        ticket.save()
         return super().update(request, *args, **kwargs)
 
 
