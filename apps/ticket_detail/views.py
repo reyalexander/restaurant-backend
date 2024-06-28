@@ -44,6 +44,22 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
         ticket.save()
         return super().update(request, *args, **kwargs)
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        ticket_id = instance.ticket_id.id
+        print(request.data)
+        new_total = request.data["new_total"]
+
+        print("entre a elimar el price")
+        if new_total is not None:
+            print("entre a editar el price")
+            ticket = Ticket.objects.get(id=ticket_id)
+            ticket.priceTotal = new_total
+            ticket.save()
+
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class MenuProductViewSet(viewsets.ViewSet):
     queryset = []  # Aquí puedes definir un queryset si es necesario

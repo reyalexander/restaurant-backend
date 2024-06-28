@@ -9,7 +9,7 @@ class TicketDetail(models.Model):
         (2, "Inactivo"),
         (3, "Eliminado"),
     )
-    ticket_id = models.ForeignKey(Ticket, on_delete=models.PROTECT)
+    ticket_id = models.ForeignKey(Ticket, on_delete=models.RESTRICT)
 
     is_menu = models.BooleanField(
         default=True, null=True, blank=True, verbose_name="Es Menu"
