@@ -9,13 +9,16 @@ class TicketDetail(models.Model):
         (2, "Inactivo"),
         (3, "Eliminado"),
     )
-    ticket_id = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    ticket_id = models.ForeignKey(Ticket, on_delete=models.PROTECT)
 
     is_menu = models.BooleanField(
         default=True, null=True, blank=True, verbose_name="Es Menu"
     )
     product_id = models.IntegerField(null=True, blank=True, verbose_name="Producto")
     price = models.DecimalField(
+        max_digits=9, decimal_places=2, default=0, verbose_name="Precio del plato"
+    )
+    price_total = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, verbose_name="Precio Total"
     )
     quantity = models.IntegerField(null=True, blank=True, verbose_name="Cantidad")
