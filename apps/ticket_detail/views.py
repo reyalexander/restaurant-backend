@@ -25,9 +25,15 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_201_CREATED,
                 )
             else:
+
                 errors = [serializer.errors for serializer in serializers]
                 return Response(errors, status=status.HTTP_400_BAD_REQUEST)
         else:
+            ticket_id = request.data["ticket_id"]
+            total = request.data["new_total"]
+            ticket = Ticket.objects.get(id=ticket_id)
+            ticket.priceTotal = total
+            ticket.save()
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
@@ -47,7 +53,7 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         ticket_id = instance.ticket_id.id
-        print(request.data)
+
         new_total = request.data["new_total"]
 
         print("entre a elimar el price")
