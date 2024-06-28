@@ -8,6 +8,7 @@ from rest_framework import filters
 class MenuProductFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         # Parámetros de consulta (query params) del request
+        is_publish = request.query_params.get("is_publish", None)
         status = request.query_params.get("status", None)
         searchBy = request.query_params.get("searchBy", None)
         search = request.query_params.get("search", None)
@@ -22,6 +23,9 @@ class MenuProductFilter(filters.BaseFilterBackend):
         if status:
             menu_queryset = menu_queryset.filter(status=status)
             product_queryset = product_queryset.filter(status=status)
+        if is_publish:
+            menu_queryset = menu_queryset.filter(is_publish=is_publish)
+            product_queryset = product_queryset.filter(is_publish=is_publish)
 
         # Filtro por search y searchBy
         if search and searchBy:

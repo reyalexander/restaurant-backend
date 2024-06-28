@@ -38,6 +38,7 @@ class Menu(models.Model):
     price = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, verbose_name="Precio s/"
     )
+    description = models.TextField(null=True, default=None, verbose_name="Descripcion")
     is_publish = models.BooleanField(default=True, null=True, blank=True)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
     created_at = models.DateTimeField(auto_now_add=True)
