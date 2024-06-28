@@ -16,7 +16,15 @@ class TicketDetailAdmin(admin.ModelAdmin):
     )
     search_fields = ("ticket_id__id", "description")
     list_filter = ("ticket_id", "status", "created_at", "updated_at")
-    fields = ("ticket_id", "quantity", "is_menu", "description", "status")
+    fields = (
+        "ticket_id",
+        "quantity",
+        "is_menu",
+        "price",
+        "product_id",
+        "description",
+        "status",
+    )
     readonly_fields = ("created_at", "updated_at")
 
 

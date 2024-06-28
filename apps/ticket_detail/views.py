@@ -37,7 +37,7 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
             )
 
     def update(self, request, *args, **kwargs):
-        total = request.validated_data["editTotal"]
+        total = request.data["new_total"]
         return super().update(request, *args, **kwargs)
 
 
