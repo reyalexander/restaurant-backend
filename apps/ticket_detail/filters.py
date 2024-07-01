@@ -81,6 +81,11 @@ class TicketDetailViewFilter(filters.BaseFilterBackend):
         product_id = request.query_params.get("product_id", None)
         if product_id:
             queryset = queryset.filter(product_id=product_id)
+
+        is_menu = request.query_params.get("is_menu", None)
+        if is_menu:
+            queryset = queryset.filter(is_menu=is_menu)
+
         # Obtiene los parámetros de consulta (query params) del request
         status = request.query_params.get("status", None)
         searchBy = request.query_params.get("searchBy", None)
