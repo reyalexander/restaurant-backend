@@ -86,3 +86,85 @@ class MenuProductViewSet(viewsets.ViewSet):
         return Response(
             {"menus": menu_serializer.data, "products": product_serializer.data}
         )
+
+
+from django.db.models import Count, Q
+
+
+class StatisticsViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request):
+        # Calcula la fecha hace 7 días desde hoy
+        seven_days_ago = datetime.now() - timedelta(days=7)
+
+        # Filtra TicketDetails por ticket_id__created_at en los últimos 7 días
+        queryset = TicketDetail.objects.filter(
+            ticket_id__created_at__gte=seven_days_ago
+        )
+
+        # Serializa los resultados
+        serializer = TicketDetailSerializer(queryset, many=True)
+
+        # Calcular estadísticas combinadas por tipo de producto y por día
+        combined_stats = {}
+        daily_total_price = {}
+
+        for i in range(7):
+            day = (datetime.now() - timedelta(days=i)).date()
+            combined_stats[str(day)] = {}
+            daily_tickets = (
+                queryset.filter(ticket_id__created_at__date=day)
+                .values("ticket_id")
+                .distinct()
+            )
+
+            # Inicializar el total de price_total para cada día
+            total_price = 0
+            unique_ticket_ids = set()
+
+            for ticket_detail in queryset.filter(ticket_id__created_at__date=day):
+                if ticket_detail.ticket_id.id not in unique_ticket_ids:
+                    unique_ticket_ids.add(ticket_detail.ticket_id.id)
+                    total_price += ticket_detail.ticket_id.priceFinal
+
+            daily_total_price[str(day)] = total_price
+
+            # Inicializar contadores de tipo de producto para cada día
+            for ticket_detail in queryset.filter(ticket_id__created_at__date=day):
+                if ticket_detail.is_menu:
+                    if "Menu" not in combined_stats[str(day)]:
+                        combined_stats[str(day)]["Menu"] = 0
+                    combined_stats[str(day)]["Menu"] += ticket_detail.quantity
+                else:
+                    try:
+                        product = Product.objects.get(id=ticket_detail.product_id)
+                        product_type = product.id_typeproduct.name
+                        if product_type not in combined_stats[str(day)]:
+                            combined_stats[str(day)][product_type] = 0
+                        combined_stats[str(day)][product_type] += ticket_detail.quantity
+                    except Product.DoesNotExist:
+                        continue
+        # Calcular estadísticas por tipo de producto
+        product_type_stats = {"Menu": 0}
+        for ticket_detail in queryset:
+            if ticket_detail.is_menu:
+                product_type_stats["Menu"] += ticket_detail.quantity
+            else:
+                try:
+                    product = Product.objects.get(id=ticket_detail.product_id)
+                    product_type = product.id_typeproduct.name
+                    if product_type not in product_type_stats:
+                        product_type_stats[product_type] = 0
+                    product_type_stats[product_type] += ticket_detail.quantity
+                except Product.DoesNotExist:
+                    continue
+
+        # Preparar la respuesta
+        response_data = {
+            "combined_stats": combined_stats,
+            "daily_total_price": daily_total_price,
+            "product_type_stats": product_type_stats,
+        }
+
+        return Response(response_data)
