@@ -18,7 +18,9 @@ class MenuProductFilter(filters.BaseFilterBackend):
         # Filtrado en modelos Menu y Product
         menu_queryset = Menu.objects.all()
         product_queryset = Product.objects.all()
-
+        company = request.user.company_id
+        menu_queryset = menu_queryset.filter(company_id=company)
+        product_queryset = product_queryset.filter(company_id=company)
         # Filtro por status
         if status:
             menu_queryset = menu_queryset.filter(status=status)

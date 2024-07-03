@@ -21,6 +21,9 @@ class Ticket(models.Model):
     ruc = models.CharField(
         max_length=100, null=True, blank=True, verbose_name="ruc/datos del cliente"
     )
+    client_name = models.CharField(
+        max_length=100, null=True, blank=True, verbose_name="Nombre del Cliente"
+    )
     discount = models.IntegerField(null=True, blank=True, verbose_name="Descuento")
     priceTotal = models.DecimalField(
         max_digits=9, decimal_places=2, default=0, verbose_name="Precio Total"

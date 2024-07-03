@@ -55,8 +55,9 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
         ticket_id = instance.ticket_id.id
 
         new_total = request.data["new_total"]
-
-        print("entre a elimar el price")
+        print(new_total)
+        print(instance.price_total)
+        print("entre a eliminar el price")
         if new_total is not None:
             print("entre a editar el price")
             ticket = Ticket.objects.get(id=ticket_id)

@@ -25,7 +25,6 @@ class TicketViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         instance = serializer.save()
         user = self.request.user
-        instance.user_id = user
         instance.company_id = user.company_id
         instance.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
