@@ -50,7 +50,7 @@ class PermissionSerializer(serializers.ModelSerializer):
     # module = ModuleSerializer(source='module_id', read_only=True)
     class Meta:
         model = Permission
-        fields = "__all__"
+        exclude = ["created_at", "updated_at"]
 
 
 class ChangePasswordSerializer(serializers.Serializer):
