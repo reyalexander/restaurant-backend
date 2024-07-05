@@ -134,9 +134,9 @@ class StatisticsViewSet(viewsets.ViewSet):
             # Inicializar contadores de tipo de producto para cada día
             for ticket_detail in queryset.filter(ticket_id__created_at__date=day):
                 if ticket_detail.is_menu:
-                    if "Menu" not in combined_stats[str(day)]:
-                        combined_stats[str(day)]["Menu"] = 0
-                    combined_stats[str(day)]["Menu"] += ticket_detail.quantity
+                    if "MENU" not in combined_stats[str(day)]:
+                        combined_stats[str(day)]["MENU"] = 0
+                    combined_stats[str(day)]["MENU"] += ticket_detail.quantity
                 else:
                     try:
                         product = Product.objects.get(id=ticket_detail.product_id)
@@ -147,10 +147,10 @@ class StatisticsViewSet(viewsets.ViewSet):
                     except Product.DoesNotExist:
                         continue
         # Calcular estadísticas por tipo de producto
-        product_type_stats = {"Menu": 0}
+        product_type_stats = {"MENU": 0}
         for ticket_detail in queryset:
             if ticket_detail.is_menu:
-                product_type_stats["Menu"] += ticket_detail.quantity
+                product_type_stats["MENU"] += ticket_detail.quantity
             else:
                 try:
                     product = Product.objects.get(id=ticket_detail.product_id)
