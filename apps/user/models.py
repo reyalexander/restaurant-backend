@@ -6,6 +6,8 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from apps.company.models import Company
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 
 
 class Role(models.Model):
@@ -39,45 +41,6 @@ class Role(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Permission(models.Model):
-    CREATE = 1
-    UPDATE = 2
-    READ = 3
-    DELETE = 4
-
-    PERMISSION_CHOICES = (
-        (CREATE, "Create"),
-        (UPDATE, "Update"),
-        (READ, "Read"),
-        (DELETE, "Delete"),
-    )
-
-    STATUS_CHOICES = (
-        (1, "Activo"),
-        (2, "Inactivo"),
-        (3, "Eliminado"),
-    )
-
-    name = models.CharField(max_length=100, choices=PERMISSION_CHOICES)
-    id_rol = models.ForeignKey(Role, on_delete=models.CASCADE, related_name="role")
-    id_resource = models.ForeignKey(
-        Resource, on_delete=models.CASCADE, related_name="resource"
-    )
-    company_id = models.ForeignKey(
-        Company,
-        on_delete=models.CASCADE,
-        related_name="CompanyPermise",
-        null=True,
-        blank=True,
-    )
-    status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.get_name_display()
 
 
 class UserManager(BaseUserManager):
@@ -167,3 +130,73 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class Module(models.Model):
+    STATUS_CHOICES = (
+        (1, "Activo"),
+        (2, "Inactivo"),
+        (3, "Eliminado"),
+    )
+
+    module_id = models.CharField(
+        primary_key=True, unique=True, null=False, max_length=8
+    )
+    module_name = models.CharField(max_length=50)
+    status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Modulo"
+        verbose_name_plural = "Modulos"
+        ordering = ["module_id"]
+
+    def __str__(self):
+        return f"{self.module_id} {self.module_name}"
+
+
+class Permission(models.Model):
+    module_id = models.ForeignKey(
+        Module, on_delete=models.CASCADE, null=True, blank=False, verbose_name="module"
+    )
+    role_id = models.ForeignKey(
+        Role, on_delete=models.CASCADE, null=True, blank=False, verbose_name="role"
+    )
+    create = models.BooleanField(default=False)
+    read = models.BooleanField(default=False)
+    update = models.BooleanField(default=False)
+    delete = models.BooleanField(default=False)
+    print = models.BooleanField(default=False)
+    export = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
+    notify = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "permiso"
+        verbose_name_plural = "permisos"
+
+
+# Crear los permisos para el nuevo módulo
+@receiver(post_save, sender=Module)
+def create_module_permissions(sender, instance, created, **kwargs):
+    if created:
+        # Crear los permisos para el nuevo módulo
+        # Permission.objects.create(module_id=instance)
+        roles = Role.objects.all()
+        for role in roles:
+            permission = Permission.objects.create(module_id=instance, role_id=role)
+            permission.save()
+
+
+@receiver(post_save, sender=Role)
+def create_permissions_for_new_user(sender, instance, created, **kwargs):
+    if created:
+        # Obtener todos los módulos existentes
+        modules = Module.objects.all()
+        # Crear permisos para cada módulo y asignarlos al nuevo usuario
+        for module in modules:
+            permission = Permission.objects.create(module_id=module, role_id=instance)
+            permission.save()

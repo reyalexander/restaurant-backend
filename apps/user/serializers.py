@@ -3,12 +3,6 @@ from apps.company.serializers import *
 from rest_framework import serializers
 
 
-class PermissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Permission
-        fields = "__all__"
-
-
 class RoleSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -44,3 +38,25 @@ class UserGetSerializer(serializers.ModelSerializer):
         ]
 
     extra_kwargs = {"password": {"write_only": True}}
+
+
+class ModuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Module
+        fields = "__all__"
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+    # module = ModuleSerializer(source='module_id', read_only=True)
+    class Meta:
+        model = Permission
+        fields = "__all__"
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(required=True)
+
+    def validate_old_password(self, password):
+        user = self.context["view"].get_object()
+        if not user.check_password(password):
+            raise serializers.ValidationError("La contraseña actual no es correcta.")
