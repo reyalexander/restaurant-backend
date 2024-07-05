@@ -159,7 +159,7 @@ class PermissionViewSet(viewsets.ModelViewSet):
             return queryset.order_by(
                 "id"
             )  # El administrador puede ver todos los elementos, incluidos los eliminados
-        return queryset.filter(status__in=[1, 2]).order_by("id")
+        return queryset.order_by("id")
 
     def create(self, request, *args, **kwargs):
         data = request.data
