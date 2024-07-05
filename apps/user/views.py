@@ -73,7 +73,11 @@ class UserViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         instance = serializer.save(company_id=user.company_id)
-
+        instance.full_name = (
+            serializer.validated_data["first_name"]
+            + " "
+            + serializer.validated_data["last_name"]
+        )
         # Hashear la contraseña antes de guardar el usuario
         instance.password = make_password(serializer.validated_data["password"])
         instance.save()
