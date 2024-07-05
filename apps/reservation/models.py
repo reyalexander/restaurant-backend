@@ -13,6 +13,9 @@ class Reservation(models.Model):
     )
     date = models.DateField(null=True, blank=True, verbose_name="Fecha de Reserva")
     hour = models.TimeField(null=True, verbose_name="Hora de Reserva")
+    name = models.CharField(
+        max_length=70, blank=True, verbose_name="Nombre del Reservista"
+    )
     number_person = models.IntegerField(
         null=True, default=0, verbose_name="Numero de personas"
     )

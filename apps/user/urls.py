@@ -15,7 +15,7 @@ urlpatterns = [
     path("token/", CustomTokenObtainPairView.as_view(), name="get_token"),
     path("refresh-token/", TokenRefreshView.as_view(), name="refresh_view"),
     path(
-        "change-own-password/",
+        "change-password/",
         ChangeOwnUserPasswordView.as_view(),
         name="change_own_user_password",
     ),
