@@ -98,6 +98,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(
         blank=False, max_length=32, verbose_name="apellidos"
     )  # apellidos completos
+    full_name = models.CharField(
+        blank=False, max_length=100, verbose_name="nombres completos"
+    )  # apellidos completos
     ruc = models.CharField(blank=False, max_length=11, verbose_name="RUC")  # RUC
     photo = models.ImageField(
         upload_to="photo_user",

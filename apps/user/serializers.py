@@ -30,6 +30,7 @@ class UserGetSerializer(serializers.ModelSerializer):
             "id",
             "first_name",
             "last_name",
+            "full_name",
             "email",
             "id_role",
             "ruc",
