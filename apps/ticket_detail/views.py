@@ -96,76 +96,87 @@ class StatisticsViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def list(self, request):
-        # Calcula la fecha hace 7 días desde hoy
-        seven_days_ago = datetime.now() - timedelta(days=7)
+        # Calcula la fecha hace 6 días desde hoy
+        six_days_ago = datetime.now() - timedelta(days=6)
 
-        # Filtra TicketDetails por ticket_id__created_at en los últimos 7 días
-        queryset = TicketDetail.objects.filter(
-            ticket_id__created_at__gte=seven_days_ago
-        )
+        # Filtra TicketDetails por ticket_id__created_at desde hace 6 días hasta hoy
+        queryset = TicketDetail.objects.filter(ticket_id__created_at__gte=six_days_ago)
 
-        # Serializa los resultados
-        serializer = TicketDetailSerializer(queryset, many=True)
+        # Generar un rango de fechas desde hace 6 días hasta hoy
+        date_range = [six_days_ago + timedelta(days=i) for i in range(7)]
 
-        # Calcular estadísticas combinadas por tipo de producto y por día
-        combined_stats = {}
+        # Inicializar diccionarios para almacenar las estadísticas
+        product_type_stats = {"MENU": 0}
         daily_total_price = {}
 
-        for i in range(7):
-            day = (datetime.now() - timedelta(days=i)).date()
-            combined_stats[str(day)] = {}
-            daily_tickets = (
-                queryset.filter(ticket_id__created_at__date=day)
-                .values("ticket_id")
-                .distinct()
-            )
+        # Calcular estadísticas por tipo de producto y por día
+        for day in date_range:
+            day_str = day.strftime("%Y-%m-%d")
 
-            # Inicializar el total de price_total para cada día
+            # Estadísticas de precio total diario
             total_price = 0
             unique_ticket_ids = set()
 
-            for ticket_detail in queryset.filter(ticket_id__created_at__date=day):
+            for ticket_detail in queryset.filter(
+                ticket_id__created_at__date=day.date()
+            ):
                 if ticket_detail.ticket_id.id not in unique_ticket_ids:
                     unique_ticket_ids.add(ticket_detail.ticket_id.id)
                     total_price += ticket_detail.ticket_id.priceFinal
 
-            daily_total_price[str(day)] = total_price
+            daily_total_price[day_str] = total_price
 
-            # Inicializar contadores de tipo de producto para cada día
-            for ticket_detail in queryset.filter(ticket_id__created_at__date=day):
+            # Estadísticas por tipo de producto
+            for ticket_detail in queryset.filter(
+                ticket_id__created_at__date=day.date()
+            ):
                 if ticket_detail.is_menu:
-                    if "MENU" not in combined_stats[str(day)]:
-                        combined_stats[str(day)]["MENU"] = 0
-                    combined_stats[str(day)]["MENU"] += ticket_detail.quantity
+                    product_type_stats["MENU"] += ticket_detail.quantity
                 else:
                     try:
                         product = Product.objects.get(id=ticket_detail.product_id)
                         product_type = product.id_typeproduct.name
-                        if product_type not in combined_stats[str(day)]:
-                            combined_stats[str(day)][product_type] = 0
-                        combined_stats[str(day)][product_type] += ticket_detail.quantity
+                        if product_type not in product_type_stats:
+                            product_type_stats[product_type] = 0
+                        product_type_stats[product_type] += ticket_detail.quantity
                     except Product.DoesNotExist:
                         continue
-        # Calcular estadísticas por tipo de producto
-        product_type_stats = {"MENU": 0}
-        for ticket_detail in queryset:
-            if ticket_detail.is_menu:
-                product_type_stats["MENU"] += ticket_detail.quantity
-            else:
-                try:
-                    product = Product.objects.get(id=ticket_detail.product_id)
-                    product_type = product.id_typeproduct.name
-                    if product_type not in product_type_stats:
-                        product_type_stats[product_type] = 0
-                    product_type_stats[product_type] += ticket_detail.quantity
-                except Product.DoesNotExist:
-                    continue
 
-        # Preparar la respuesta
+        # Preparar la respuesta en el formato solicitado
         response_data = {
-            "combined_stats": combined_stats,
+            "combined_stats": [],
             "daily_total_price": daily_total_price,
             "product_type_stats": product_type_stats,
         }
+
+        # Formato para combined_stats
+        for product_type, quantity in product_type_stats.items():
+            data_points = []
+            for day in date_range:
+                day_str = day.strftime("%Y-%m-%d")
+                data_points.append({"x": day_str, "y": 0})
+            response_data["combined_stats"].append(
+                {"name": product_type, "data": data_points}
+            )
+
+        # Llenar datos reales en combined_stats
+        for day_index, day in enumerate(date_range):
+            for ticket_detail in queryset.filter(
+                ticket_id__created_at__date=day.date()
+            ):
+                if ticket_detail.is_menu:
+                    response_data["combined_stats"][0]["data"][day_index][
+                        "y"
+                    ] += ticket_detail.quantity
+                else:
+                    try:
+                        product = Product.objects.get(id=ticket_detail.product_id)
+                        product_type = product.id_typeproduct.name
+                        for stat in response_data["combined_stats"]:
+                            if stat["name"] == product_type:
+                                stat["data"][day_index]["y"] += ticket_detail.quantity
+                                break
+                    except Product.DoesNotExist:
+                        continue
 
         return Response(response_data)
