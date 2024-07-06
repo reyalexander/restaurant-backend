@@ -61,9 +61,7 @@ class PlateListViewSet(viewsets.ViewSet):
                 "product_type": product_type.name,
                 "description": product_type.description,
                 "product_image": (
-                    product_type.product_image.url
-                    if product_type.product_image
-                    else None
+                    product_type.product_image if product_type.product_image else None
                 ),
                 "products": [],
             }
@@ -75,7 +73,7 @@ class PlateListViewSet(viewsets.ViewSet):
                     "price": product.price,
                     "discount": product.discount,
                     "image": (
-                        product.product_type_image.url
+                        product.product_type_image
                         if product.product_type_image
                         else None
                     ),

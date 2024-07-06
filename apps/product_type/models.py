@@ -18,7 +18,7 @@ class ProductType(models.Model):
     name = models.CharField(max_length=70, blank=True, verbose_name="Nombre")
     description = models.TextField(null=True, default=None, verbose_name="Descripcion")
     product_image = models.ImageField(
-        upload_to="products", blank=True, null=True, verbose_name="Imagen"
+        upload_to="product_type", blank=True, null=True, verbose_name="Imagen"
     )
     is_publish = models.BooleanField(default=True, null=True, blank=True)
     status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
