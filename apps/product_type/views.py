@@ -7,6 +7,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from django.db.models import Q
 from .filters import *
+from apps.product.serializers import *
+from apps.menu.serializers import *
 
 
 class ProductTypeViewSet(viewsets.ModelViewSet):
@@ -42,41 +44,38 @@ class PlateListViewSet(viewsets.ViewSet):
         product_types = ProductType.objects.filter(
             company_id=user.company_id, is_publish=True
         )
+        product_types_s = ProductTypeSerializer(product_types, many=True).data
 
         # Obtener todos los menús publicados
         menus = Menu.objects.filter(company_id=user.company_id, is_publish=True)
+        menus_s = MenuSerializer(menus, many=True).data
 
         # Inicializar la lista de respuesta
         response_data = {"data": []}
 
         # Procesar tipos de productos
-        for product_type in product_types:
+        for product_type in product_types_s:
             # Obtener los productos publicados para cada tipo de producto
             products = Product.objects.filter(
-                id_typeproduct=product_type, is_publish=True
+                id_typeproduct=product_type["id"], is_publish=True
             )
 
             # Crear una estructura de datos para el tipo de producto y sus productos
             type_data = {
-                "product_type": product_type.name,
-                "description": product_type.description,
-                "product_image": (
-                    product_type.product_image if product_type.product_image else None
-                ),
+                "product_type": product_type["name"],
+                "description": product_type["description"],
+                "product_image": product_type["product_image"],
                 "products": [],
             }
 
-            for product in products:
+            products_s = ProductSerializer(products, many=True).data
+            for product in products_s:
                 product_data = {
-                    "name": product.name,
-                    "description": product.description,
-                    "price": product.price,
-                    "discount": product.discount,
-                    "image": (
-                        product.product_type_image
-                        if product.product_type_image
-                        else None
-                    ),
+                    "name": product["name"],
+                    "description": product["description"],
+                    "price": product["price"],
+                    "discount": product["discount"],
+                    "image": product["product_type_image"],
                 }
                 type_data["products"].append(product_data)
 
@@ -90,15 +89,15 @@ class PlateListViewSet(viewsets.ViewSet):
             "products": [],
         }
 
-        for menu in menus:
+        for menu in menus_s:
             menu_data = {
-                "name": menu.name,
-                "description": menu.description,
-                "price": menu.price,
-                "day": menu.get_day_display(),
-                "starters": [starter.name for starter in menu.starters.all()],
+                "name": menu["name"],
+                "description": menu["description"],
+                "price": menu["price"],
+                "day": menu["day"],
+                "starters": [starter["name"] for starter in menu["_starters"]],
                 "main_courses": [
-                    main_course.name for main_course in menu.main_courses.all()
+                    main_course["name"] for main_course in menu["_main_courses"]
                 ],
             }
 
