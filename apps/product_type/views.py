@@ -103,6 +103,6 @@ class PlateListViewSet(viewsets.ViewSet):
 
             menu_type_data["products"].append(menu_data)
 
-        response_data["menu"].append(menu_type_data)
+        response_data["menu"] = menu_type_data
 
         return Response(response_data)
