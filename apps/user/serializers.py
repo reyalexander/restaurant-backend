@@ -56,8 +56,13 @@ class PermissionSerializer(serializers.ModelSerializer):
 
 class ChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
 
     def validate_old_password(self, password):
         user = self.context["view"].get_object()
         if not user.check_password(password):
             raise serializers.ValidationError("La contraseña actual no es correcta.")
+
+
+class ChangePasswordSuperUserSerializer(serializers.Serializer):
+    new_password = serializers.CharField(required=True)

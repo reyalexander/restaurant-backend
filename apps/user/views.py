@@ -226,6 +226,7 @@ class BulkUpdatePermissionsView(viewsets.ModelViewSet):
 
 class ChangeOwnUserPasswordView(generics.UpdateAPIView):
     serializer_class = ChangePasswordSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         # Retrieve the currently logged-in user
@@ -239,11 +240,11 @@ class ChangeOwnUserPasswordView(generics.UpdateAPIView):
         user = self.request.user
 
         # Verifica si se proporciona la contraseña actual
-        old_password = request.data.get("old_password")
+        old_password = request.data.get("password")
         if old_password and not user.check_password(old_password):
             return Response(
                 {"detail": "La contraseña actual proporcionada es incorrecta."},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         # Procesa la solicitud de cambio de contraseña
@@ -257,5 +258,39 @@ class ChangeOwnUserPasswordView(generics.UpdateAPIView):
 
             return Response(
                 {"detail": "Contraseña cambiada con éxito."}, status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangeUserPasswordView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = ChangePasswordSuperUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        # Obtén el usuario a través del ID proporcionado en la solicitud
+        user_id = kwargs.get("pk")
+        user = User.objects.get(pk=user_id)
+
+        # Verifica si el usuario actual está autenticado y este es admin
+        if not request.user.is_authenticated or not request.user.is_admin:
+            return Response(
+                {
+                    "detail": "No tienes permisos para cambiar la contraseña de este usuario."
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        # Procesa la solicitud de cambio de contraseña
+        serializer = self.get_serializer(user, data=request.data)
+        if serializer.is_valid():
+            user.set_password(serializer.validated_data["new_password"])
+            user.save()
+            return Response(
+                {
+                    "detail": "User "
+                    + str(user.id)
+                    + " - Contraseña cambiada con éxito."
+                },
+                status=status.HTTP_200_OK,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

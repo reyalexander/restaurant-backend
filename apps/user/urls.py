@@ -20,6 +20,11 @@ urlpatterns = [
         name="change_own_user_password",
     ),
     path(
+        "change-password/<int:pk>/",
+        ChangeUserPasswordView.as_view(),
+        name="change_user_password",
+    ),
+    path(
         "bulk-permissions/",
         BulkUpdatePermissionsView.as_view({"patch": "update"}),
         name="bulk-update-permissions",
