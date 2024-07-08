@@ -51,7 +51,7 @@ class PlateListViewSet(viewsets.ViewSet):
         menus_s = MenuSerializer(menus, many=True).data
 
         # Inicializar la lista de respuesta
-        response_data = {"data": []}
+        response_data = {"data": [], "menu": []}
 
         # Procesar tipos de productos
         for product_type in product_types_s:
@@ -103,6 +103,6 @@ class PlateListViewSet(viewsets.ViewSet):
 
             menu_type_data["products"].append(menu_data)
 
-        response_data["data"].append(menu_type_data)
+        response_data["menu"].append(menu_type_data)
 
         return Response(response_data)
