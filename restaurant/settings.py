@@ -51,13 +51,15 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_yasg',
+    'channels',
     'apps.product',
     'apps.product_type',
     'apps.resource',
     'apps.user',
     'apps.table',
     'apps.ticket',
-    'apps.ticket_detail'
+    'apps.ticket_detail',
+    'apps.chat',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -101,7 +103,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'restaurant.wsgi.application'
-
+ASGI_APPLICATION = 'restaurant.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -186,3 +188,22 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
 }
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
+#Channel Redis cuando levantemos servidor
+'''
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+'''

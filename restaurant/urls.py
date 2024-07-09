@@ -45,5 +45,6 @@ urlpatterns = [
     path('api/v1/table/', include("apps.table.urls")),
     path('api/v1/ticket/', include("apps.ticket.urls")),
     path('api/v1/ticket_detail/', include("apps.ticket_detail.urls")),
+    path('api/v1/chat/', include('apps.chat.urls')),
     path('swagger/', schema_view.with_ui("swagger", cache_timeout=0), name="swagger-docs"),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
