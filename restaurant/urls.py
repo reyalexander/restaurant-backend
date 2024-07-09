@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import permissions
@@ -24,27 +25,30 @@ from django.conf.urls.static import static
 
 schema_view = get_schema_view(
     openapi.Info(
-        title= "Restaurant API",
+        title="Restaurant API",
         default_version="v1",
         description="API para hacer Documentacion de mi proyecto",
         terms_of_service="https://www.google.com/policies/terms/",
-        contact= openapi.Contact(email="alexandercayromamani@gmail.com"),
-        license= openapi.License(name='MIT')
+        contact=openapi.Contact(email="alexandercayromamani@gmail.com"),
+        license=openapi.License(name="MIT"),
     ),
-
     public=True,
-    permission_classes=[permissions.AllowAny]
+    permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/v1/user/', include("apps.user.urls")),
-    path('api/v1/product/', include("apps.product.urls")),
-    path('api/v1/product_type/', include("apps.product_type.urls")),
-    path('api/v1/resource/', include("apps.resource.urls")),
-    path('api/v1/table/', include("apps.table.urls")),
-    path('api/v1/ticket/', include("apps.ticket.urls")),
-    path('api/v1/ticket_detail/', include("apps.ticket_detail.urls")),
-    path('api/v1/chat/', include('apps.chat.urls')),
-    path('swagger/', schema_view.with_ui("swagger", cache_timeout=0), name="swagger-docs"),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path("admin/", admin.site.urls),
+    path("api/v1/company/", include("apps.company.urls")),
+    path("api/v1/user/", include("apps.user.urls")),
+    path("api/v1/product/", include("apps.product.urls")),
+    path("api/v1/product_type/", include("apps.product_type.urls")),
+    path("api/v1/resource/", include("apps.resource.urls")),
+    path("api/v1/table/", include("apps.table.urls")),
+    path("api/v1/ticket/", include("apps.ticket.urls")),
+    path("api/v1/ticket_detail/", include("apps.ticket_detail.urls")),
+    path("api/v1/reservation/", include("apps.reservation.urls")),
+    path("api/v1/menu/", include("apps.menu.urls")),
+    path(
+        "swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="swagger-docs"
+    ),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

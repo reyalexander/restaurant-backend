@@ -1,22 +1,68 @@
-
 from apps.user.models import *
+from apps.company.serializers import *
 from rest_framework import serializers
-
-class PermissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model  = Permission
-        fields = '__all__'
 
 
 class RoleSerializer(serializers.ModelSerializer):
-    permissions = PermissionSerializer(source='permission_set',many=True,required=False,label='permisos')
 
     class Meta:
-        model  = Role
-        fields = '__all__'
+        model = Role
+        exclude = ["created_at", "updated_at"]
 
 
 class UserSerializer(serializers.ModelSerializer):
+    _id_role = RoleSerializer(source="id_role", read_only=True)
+    _company_id = CompanySerializer(source="company_id", read_only=True)
+
     class Meta:
         model = User
-        exclude = ['password','is_admin','last_login','created','updated','groups','user_permissions']
+        exclude = ["created", "updated", "deleted"]
+        extra_kwargs = {"password": {"write_only": True}}
+
+
+class UserGetSerializer(serializers.ModelSerializer):
+    _id_role = RoleSerializer(source="id_role", read_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            "company_id",
+            "id",
+            "first_name",
+            "last_name",
+            "full_name",
+            "email",
+            "id_role",
+            "ruc",
+            "status",
+            "_id_role",
+        ]
+
+    extra_kwargs = {"password": {"write_only": True}}
+
+
+class ModuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Module
+        fields = "__all__"
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+    # module = ModuleSerializer(source='module_id', read_only=True)
+    class Meta:
+        model = Permission
+        exclude = ["created_at", "updated_at"]
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate_old_password(self, password):
+        user = self.context["view"].get_object()
+        if not user.check_password(password):
+            raise serializers.ValidationError("La contraseña actual no es correcta.")
+
+
+class ChangePasswordSuperUserSerializer(serializers.Serializer):
+    new_password = serializers.CharField(required=True)

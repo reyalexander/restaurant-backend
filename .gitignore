@@ -168,3 +168,6 @@ media/
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+prueba.py
+**/migrations/
+data.json
