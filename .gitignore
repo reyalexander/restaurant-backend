@@ -171,3 +171,6 @@ media/
 prueba.py
 **/migrations/
 data.json
+build/
+dist/
+restaurant.zip
