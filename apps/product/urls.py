@@ -7,5 +7,4 @@ router.register(r'', views.ProductViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('reports/pdfs/', views.ReportsProductAPIView.as_view()),
 ]
