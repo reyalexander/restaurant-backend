@@ -243,8 +243,8 @@ class ChangeOwnUserPasswordView(generics.UpdateAPIView):
         old_password = request.data.get("password")
         if old_password and not user.check_password(old_password):
             return Response(
-                {"detail": "La contraseña actual proporcionada es incorrecta."},
-                status=status.HTTP_401_UNAUTHORIZED,
+                {"data": ["La contraseña actual proporcionada es incorrecta."]},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         # Procesa la solicitud de cambio de contraseña

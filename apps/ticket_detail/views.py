@@ -31,8 +31,10 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
         else:
             ticket_id = request.data["ticket_id"]
             total = request.data["new_total"]
+            final = request.data["new_final"]
             ticket = Ticket.objects.get(id=ticket_id)
             ticket.priceTotal = total
+            ticket.priceFinal = final
             ticket.save()
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
@@ -45,8 +47,10 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         ticket_id = request.data["ticket_id"]
         total = request.data["new_total"]
+        final = request.data["new_final"]
         ticket = Ticket.objects.get(id=ticket_id)
         ticket.priceTotal = total
+        ticket.priceFinal = final
         ticket.save()
         return super().update(request, *args, **kwargs)
 
@@ -55,6 +59,7 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
         ticket_id = instance.ticket_id.id
 
         new_total = request.data["new_total"]
+        new_final = request.data["new_final"]
         print(new_total)
         print(instance.price_total)
         print("entre a eliminar el price")
@@ -62,6 +67,7 @@ class TicketDetailViewSet(viewsets.ModelViewSet):
             print("entre a editar el price")
             ticket = Ticket.objects.get(id=ticket_id)
             ticket.priceTotal = new_total
+            ticket.priceFinal = new_final
             ticket.save()
 
         self.perform_destroy(instance)
