@@ -11,16 +11,11 @@ from django.dispatch import receiver
 
 
 class Role(models.Model):
-    ADMINISTRATOR = 1
-    ADMINISTRATIVE = 2
-    WORKER = 3
-
     STATUS_CHOICES = (
         (1, "Activo"),
         (2, "Inactivo"),
         (3, "Eliminado"),
     )
-
     name = models.CharField(max_length=100, verbose_name="nombre")
     description = models.TextField(null=True, verbose_name="descripcion del Rol")
     company_id = models.ForeignKey(
